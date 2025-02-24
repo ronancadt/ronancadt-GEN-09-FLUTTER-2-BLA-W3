@@ -8,6 +8,7 @@ import '../../../utils/date_time_util.dart';
 import '../../../widgets/actions/bla_button.dart';
 import '../../../widgets/display/bla_divider.dart';
 import '../../../widgets/inputs/bla_location_picker.dart';
+import '../../rides/rides_screen.dart';
 import 'ride_pref_input_tile.dart';
  
 ///
@@ -67,7 +68,8 @@ class _RidePrefFormState extends State<RidePrefForm> {
   void onDeparturePressed() async {
     // 1- Select a location
     Location? selectedLocation = await Navigator.of(context).push<Location>(
-        AnimationUtils.createBottomToTopRoute(BlaLocationPicker(initLocation: departure,)));
+        AnimationUtils.createBottomToTopRoute(BlaLocationPicker(initLocation: departure,))
+        );
 
     // 2- Update the from if needed
     if (selectedLocation != null) {
@@ -90,7 +92,25 @@ class _RidePrefFormState extends State<RidePrefForm> {
     }
   }
   
-  void onSubmit() {}
+  void onSubmit() {
+        bool hasDeparture = departure != null;
+    bool hasArrival = arrival != null;
+
+    if (hasDeparture && hasArrival) {
+      // 1- Crea a Ride Pref from user inputs
+      RidePref newRideRef = RidePref(
+          departure: departure!,
+          departureDate: departureDate,
+          arrival: arrival!,
+          requestedSeats: requestedSeats);
+
+      // 2 - Navigate to the rides screen (with a buttom to top animation)
+      Navigator.of(context)
+          .push(AnimationUtils.createBottomToTopRoute(RidesScreen(
+        initialRidePref: newRideRef,
+      )));
+    }
+  }
 
  
   void onSwappingLocationPressed() {

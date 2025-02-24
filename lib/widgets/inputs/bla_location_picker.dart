@@ -8,7 +8,8 @@ import '../../theme/theme.dart';
 /// This full-screen modal is in charge of providing (if confirmed) a selected location.
 ///
 class BlaLocationPicker extends StatefulWidget {
-  final Location? initLocation; // The picker can be triguer with an existing location name
+  final Location?
+      initLocation; // The picker can be triguer with an existing location name
 
   const BlaLocationPicker({super.key, this.initLocation});
 
@@ -18,29 +19,46 @@ class BlaLocationPicker extends StatefulWidget {
 
 class _BlaLocationPickerState extends State<BlaLocationPicker> {
   List<Location> filteredLocations = [];
- 
+
+  // ----------------------------------
+  // Initialize the Form attributes
+  // ----------------------------------
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.initLocation != null) {
+      filteredLocations = getLocationsFor(widget.initLocation!.name);
+    }
+  }
 
   void onBackSelected() {
     Navigator.of(context).pop();
   }
 
-  void  onLocationSelected(Location location) {
+  void onLocationSelected(Location location) {
     Navigator.of(context).pop(location);
   }
 
   void onSearchChanged(String searchText) {
     List<Location> newSelection = [];
 
-    if (searchText.length > 1) {   // We start to search from 2 characters only.
-      newSelection = LocationsService.availableLocations
-          .where((location) =>
-              location.name.toUpperCase().contains(searchText.toUpperCase()))
-          .toList();
+    if (searchText.length > 1) {
+      // We start to search from 2 characters only.
+      newSelection = getLocationsFor(searchText);
     }
 
     setState(() {
       filteredLocations = newSelection;
     });
+  }
+
+  List<Location> getLocationsFor(String text) {
+    return LocationsService.availableLocations
+        .where((location) =>
+            location.name.toUpperCase().contains(text.toUpperCase()))
+        .toList();
   }
 
   @override
@@ -102,9 +120,6 @@ class LocationTile extends StatelessWidget {
     );
   }
 }
-
-
-
 
 ///
 ///  The Search bar combines the search input + the navigation back button
